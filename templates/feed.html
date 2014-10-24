@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+{% load tz %}
+{% block body %}
+<div>
+<h1>Feeds Panel</h1>
+<p>Feeds from NewsZeit.com kindly provided by Bruce.You</p>
+</div>
+<br/>
+<div>
+<form method="get" action="/1">
+	<div class="input-control text">
+        <input name="q" type="text" placeholder="Enter search text" {%if q%}value="{{q}}"{%endif%}/>
+    </div>
+    <label class="input-control radio">
+	<input type="radio" name="sortby" value="numsubscribers" {% if sortby == "numsubscribers"%}checked{%endif%}>
+	<span class="helper">Num Subscribers(default)</span>
+	</label>
+	<label class="input-control radio">
+	<input type="radio" name="sortby" value="hasexception" {% if sortby == "hasexception"%}checked{%endif%}>
+	<span class="helper">Has Exception</span>
+	</label>
+	<label class="input-control radio">
+	<input type="radio" name="sortby" value="nextupdate" {% if sortby == "nextupdate"%}checked{%endif%}>
+	<span class="helper">Next Update</span>
+	</label>
+	<label class="input-control radio">
+	<input type="radio" name="sortby" value="lastupdate" {% if sortby == "lastupdate"%}checked{%endif%}>
+	<span class="helper">Last Update</span>
+	</label>
+
+    <input class="bg-color-green" type="submit" value="Submit"/>
+</form>
+</div>
+<table class="hovered">
+<thead>
+<tr><th>ID</th><th>Feed_Address</th><th>Feed_Link</th><th>Num_Subscribers</th><th>Feed_Title</th><th nowrap="true">Next Update</th><th nowrap="true">Last Update</th></tr>
+</thead>
+<tbody>
+{% for feed in feeds.object_list %}
+<tr {% if feed.has_feed_exception %}class="error"{%endif%}>
+	<td>{{feed.id}}</td> 
+	<td>
+		<a href="/feed/{{feed.id}}">{{feed.feed_address}}</a>
+	</td> 
+	<td>
+		<a href="/feed/{{feed.id}}">{{feed.feed_link}}</a>
+	</td> 
+	<td>{{feed.active_subscribers}}/{{feed.num_subscribers}}</td>
+	<td>{{feed.feed_title|slice:"0:20"}}</td>
+	<td>{{feed.next_scheduled_update|timeuntil:now}}</td>
+	<td>{{feed.last_update|timesince:now}}</td>
+</tr>
+</tbody>
+{% endfor %}
+</table>
+
+{% if feeds.has_previous %}
+	<a class="button" href="/{{feeds.previous_page_number}}{%if q%}?q={{q}}{%endif%}">Prev</a>
+{% else %}
+	<a class="button disabled">Prev</a>
+{% endif %}
+
+{% if feeds.has_next %}
+	<a class="button bg-color-blue" href="/{{feeds.next_page_number}}?q={{q}}&sortby={{sortby}}">Next</a>
+{% else %}
+	<a class="button disabled bg-color-blue">Next</a>
+{% endif %}
+{{feeds.number}} / {{feeds.paginator.num_pages}}
+<a class="button bg-color-blue" href="/Stories_1">Show Stories</a>
+{% endblock %}

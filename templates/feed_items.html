@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block body %}
+<div>
+<h1>{{feed.feed_title}}</h1>
+<a href="{{feed.feed_address}}">{{feed.feed_address}}</a>
+</div>
+<br/>
+<div>
+<a class="button bg-color-blue" href="{{feed.feed_address}}">To See the Original Contents</a>
+<a class="button bg-color-blue" href="../feed_{{feed.id}}">To See Feed Parsed Items</a>
+</div>
+{% for item in items %}
+<div id="story">
+	<a href="{{item.story_permalink}}"><h2 class="fg-color-red">{{item.story_title}}</h2></a>
+	<a href="../Story_{{item.story_hash}}_0" class="fg-color-orange">To See Original Story Click Here! - {{item.story_hash}}<a/>
+	<div>{{item.story_date}}</div>
+	<div id="story_content" class='long-text'>
+		{{item.story_content|safe}}
+	</div>
+	{% if item.image_urls %}
+	<div class="bg-color-blueLight">
+		{% for image_url in item.image_urls %}
+		<p><a href="{{image_url}}">{{image_url}}</a></p>
+		{% endfor %}
+	</div>
+	{% endif %}
+</div>
+{% endfor %}
+{% endblock %}

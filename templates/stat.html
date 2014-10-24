@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block body %}
+<script type="text/javascript">
+	var first=true;
+	function getdata(){
+		$.ajax({ 
+        url: '/stat/get', 
+        // type: 'REQUEST', 
+        dataType: "json", 
+        cache: false, 
+        timeout: 10000, 
+        error: function(){}, 
+        success: function(data){ 
+            shownum(data.num_stories,data.num_frozen_stories,data.num_images,data.free_disk_space); 
+        } 
+       	}); 
+	}
+	function shownum(num_stories,num_frozen_stories,num_images,free_disk_space){
+		num_cache_stories = num_stories
+		num_stories = num_stories + num_frozen_stories
+		var span_num_stories = document.getElementById("num_stories");
+		var span_num_cache_stories = document.getElementById('num_cache_stories')
+		var span_num_images = document.getElementById("num_images");
+		var span_free_disk_space = document.getElementById("free_disk_space");
+
+		if(first==true){
+			span_num_stories.innerHTML=num_stories;
+			span_num_cache_stories.innerHTML = num_cache_stories;
+			span_num_images.innerHTML=num_images;
+			span_free_disk_space.innerHTML = free_disk_space;
+			first = false;
+			return;
+		}
+		span_num_cache_stories.innerHTML =  num_cache_stories;
+
+		current_num_images = parseInt(span_num_images.innerHTML);
+		current_num_stories = parseInt(span_num_stories.innerHTML);
+		current_free_disk_space = parseInt(span_free_disk_space.innerHTML);
+		var i=setInterval(function(){
+			if(current_num_images >= num_images){
+				clearInterval(i)
+			}else{
+				current_num_images++;
+				span_num_images.innerHTML = current_num_images;
+			}
+		},100);
+		var j=setInterval(function(){
+			if(current_num_stories >= num_stories){
+				clearInterval(j)
+			}else{
+				current_num_stories++;
+				span_num_stories.innerHTML = current_num_stories;
+			}
+		},100);
+		var k=setInterval(function(){
+			if(current_free_disk_space <= free_disk_space){
+				clearInterval(k)
+			}else{
+				current_free_disk_space--;
+				span_free_disk_space.innerHTML = current_free_disk_space;
+			}
+		},100);		
+	}
+	$(function(){
+		getdata();
+		setInterval('getdata()', 5000);
+	});
+</script>
+<div>
+<h1>Stat</h1>
+<p>show the statistics</p>
+</div>
+<div>
+	<!-- <table class="border striped" style="width:800px;font-size:48px">
+		<tr><td>Stories:</td><td><span id="num_stories" class="fg-color-green"></span></td></tr>
+		<tr><td>Images:</td><td><span id="num_images" class="fg-color-red"></span></td></tr>
+	</table> -->
+	<h2>Stories: <span id="num_stories" class="fg-color-green"></span>(<span id="num_cache_stories" class="fg-color-grey"></span>)</h2>
+	<h2>Images: <span id="num_images" class="fg-color-red"></span></h2>
+	<h3>Free Disk: <span id="free_disk_space"></span> M</h3>
+</div>
+{% endblock %}

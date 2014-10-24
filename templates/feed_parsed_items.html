@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block body %}
+<div>
+<h1>Feed Items Overview</h1>
+<p>Items from {{feed.feed_title}} - {{feed.feed_address}}</p>
+</div>
+<br/>
+<div>
+<a class="button bg-color-blue" href="{{feed.feed_address}}">To See the Original Contents</a>
+</div>
+<table class="hovered">
+<thead>
+<tr><th>Published Time</th><th>Title</th><th>Summary</th><th>Address</th></tr>
+</thead>
+<tbody>
+{% for item in items %}
+<tr>
+	<td>{{item.published}}</td> 
+	<td>{{item.title}}</td>
+	<td>{{item.summary|safe}}</td>
+	<td>
+		<a href="/feed_{{feed.id}}">{{item.link}}</a>
+	</td> 
+</tr>
+</tbody>
+{% endfor %}
+</table>
+{% endblock %}

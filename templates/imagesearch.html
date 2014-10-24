@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block body %}
+<div>
+<h1>Image Search</h1>
+<!-- <p>Search stories</p> -->
+</div>
+<br/>
+<div>
+<form method="get" action="/imagesearch/">
+	<div class="input-control text" style="width:800px">
+        <input name="q" type="text" placeholder="Enter search text" {%if q%}value="{{q}}"{%endif%}/>
+        <!-- <button class="btn-search"></button> -->
+    </div>
+</form>
+</div>
+{% if q %}
+	<div id="image">
+	{% for item in response_images%}
+	<a href="{{item.story_url}}"><img alt="{{item.story_title}}" src="{{item.image_url}}" height="200px"></a>
+	{% endfor %}
+	</div>
+{% endif %}
+{% endblock %}

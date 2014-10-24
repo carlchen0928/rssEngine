@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+{% block body %}
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+<script type="text/javascript">
+	var first=true;
+  var K = 1000;
+  var M = 1000000;
+  var G = 1000000000;
+	function getdata(){
+		$.ajax({ 
+        url: '/monitor/get', 
+        // type: 'REQUEST', 
+        dataType: "json", 
+        cache: false, 
+        timeout: 10000, 
+        error: function(){}, 
+        success: function(data){ 
+            show(data); 
+        } 
+       	}); 
+	}
+	function show(data){
+    // show data chart
+    // prepare data for io chart
+    bytes_sent = [];
+    bytes_recv = [];
+    for(i=0;i<data.length;++i)
+    {
+      log = data[i]
+      bytes_sent.push([log["time"] * 1000,log["network_io"]["bytes_sent"]/K])
+      bytes_recv.push([log["time"] * 1000,log["network_io"]["bytes_recv"]/K])
+    }
+
+     Highcharts.setOptions({
+       global: {
+         useUTC: false
+       }
+     });
+    $('#net-io-bytes-chart').highcharts('StockChart', {
+      chart: {
+        },
+
+      rangeSelector: {
+        selected: 1,
+
+        buttons: [{
+          type: 'minute',
+          count: 60,
+          text: '1h'
+        },{
+          type: 'minute',
+          count: 180,
+          text: '3h'
+        },{
+          type: 'day',
+          count: 1,
+          text: '1d'
+        }, {
+          type: 'day',
+          count: 3,
+          text: '3d'
+        }, {
+          type: 'week',
+          count: 1,
+          text: '1w'
+        }, {
+          type: 'week',
+          count: 2,
+          text: '2w'
+        }, {
+          type: 'month',
+          count: 1,
+          text: '1m'
+        }, {
+          type: 'all',
+          text: 'All'
+        }],
+      },
+
+      title: {
+      text: 'Network IO(KB/s)'
+      },
+
+      series: [
+      {
+        name: 'Bytes sent(KB/s)',
+        data: bytes_sent,
+        type: 'spline',
+        tooltip: {
+          valueDecimals: 2
+        }
+      },
+      {
+        name: 'Bytes recv(KB/s)',
+        data: bytes_recv,
+        type: 'spline',
+        tooltip: {
+        valueDecimals: 2
+        }
+      }]
+    });
+
+  }
+	$(function(){
+		getdata();
+		setInterval('getdata()', 60000);
+	});
+</script>
+<div>
+<h1>Network Monitor</h1>
+<p>statistics of network</p>
+</div>
+<div id="net-io-bytes-chart" min-width: 310px; height: 400px; margin: 0 auto> </div>
+{% endblock %}

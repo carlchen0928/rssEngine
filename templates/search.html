@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block body %}
+<div>
+<h1>Story Search</h1>
+<!-- <p>Search stories</p> -->
+</div>
+<br/>
+<div>
+<form method="get" action="/search/">
+	<div class="input-control text" style="width:800px">
+        <input name="q" type="text" placeholder="Enter search text" {%if q%}value="{{q}}"{%endif%}/>
+        <!-- <button class="btn-search"></button> -->
+    </div>
+</form>
+</div>
+{% if q %}
+	{% for item in stories%}
+	<div id="story">
+		<a href="/Story_{{item.db_id}}_0"><h3 class="fg-color-blue">{{item.get_meta.highlight.title.0|safe}}</h3></a>
+		<div>{{item.date}}</div>
+		<div id="story_content" class='long-text'>
+			{{item.get_meta.highlight.content.0|safe}}
+		</div>
+	</div>
+	{% endfor %}
+{% endif %}
+{% endblock %}

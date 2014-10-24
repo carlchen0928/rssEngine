@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block body %}
+<a href="{{story.story_permalink}}"><h2 class="fg-color-red">{{story.story_title}}</h2></a>
+<div>
+{{original_text|safe}}
+</div>
+<!-- <hr/>
+<br/> -->
+<!-- <h2>Text</h2>
+{{text}}
+<br/> -->
+<hr/>
+<h2>Image URLs</h2>
+{% for img_url in img_urls %}
+<a href="{{img_url}}">{{img_url}}</a>
+<br/>
+{% endfor %}
+<br/>
+<br/>
+<a class="button bg-color-blue" href="../Story_{{story.story_hash}}_1">Force Refresh</a>
+<br/>
+{% endblock %}

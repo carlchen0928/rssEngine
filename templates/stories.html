@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block body %}
+<div>
+<h1>Stories Overview</h1>
+<p>Show Stories in the Database,10 stories per page.</p>
+</div>
+<br/>
+
+<table class="hovered">
+<thead>
+<tr><th>ID</th><th>Story_Date</th><th>Story_Title</th><th>Story_Link</th></tr>
+</thead>
+<tbody>
+{% for story in stories %}
+<tr>
+	<td>{{story.id}}</td> 
+	<td>{{story.story_date}}</td>
+	<td><a href="../Story_{{story.story_hash}}_0">{{story.story_title}}</a></td>
+	<td>
+		<a href={{story.story_permalink}}>{{story.story_permalink}}</a>
+	</td>
+</tr>
+</tbody>
+{% endfor %}
+</table>
+
+{% if stories.has_previous %}
+	<a class="button" href="/Stories_{{stories.previous_page_number}}{%if q%}?q={{q}}{%endif%}">Prev</a>
+{% else %}
+	<a class="button disabled">Prev</a>
+{% endif %}
+
+{% if stories.has_next %}
+	<a class="button bg-color-blue" href="/Stories_{{stories.next_page_number}}{%if q%}?q={{q}}{%endif%}">Next</a>
+{% else %}
+	<a class="button disabled bg-color-blue">Next</a>
+{% endif %}
+{{stories.number}} / {{stories.paginator.num_pages}}
+
+
+{% endblock %}

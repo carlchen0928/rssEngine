@@ -1,0 +1,345 @@
+{% extends "layout.html" %}
+{% block body %}
+   	<script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src='/static/highcharts.js'></script>
+	<script type="text/javascript" src='/static/exporting.js'></script>
+	<script type="text/javascript">
+var story_size=0;
+var image_size=0;
+function getimage()
+{
+	var cur_image;
+	$.ajax({
+	async:false,
+	timeout:50000,
+	url:'/stat/get',
+	datatype:"json",
+	success: function(result){
+             cur_image=result.num_images;}
+	});
+	var speed=cur_image-image_size;
+	image_size=cur_image;
+	return speed;
+}
+
+function getstory()
+{
+	var cur_story;
+        $.ajax({
+        async:false,
+        timeout:50000,
+        url:'/stat/get',
+        datatype:"json",
+        success: function(result){
+             cur_story=result.num_stories+result.num_frozen_stories;}
+        });
+	var speed=cur_story-story_size;
+	story_size=cur_story;
+        return speed;
+}
+
+$(function () {
+    $(document).ready(function() {
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        });
+        var chart;
+        $('#imagecontainer').highcharts({
+            chart: {
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                    load: function() {
+    
+                        // set up the updating of the chart each second
+                        var series = this.series[0];
+                        setInterval(function() {
+                            var x = (new Date()).getTime(), // current time
+                                y = getimage();
+                            series.addPoint([x, y], true, true);
+                        },60* 1000);
+                    }
+                }
+            },
+            title: {
+                text: 'Speed'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Value'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                formatter: function() {
+                        return '<b>'+ this.series.name +'</b><br/>'+
+                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) +'<br/>'+
+                        Highcharts.numberFormat(this.y, 2);
+                }
+            },
+	    credits: {
+		enabled:false
+	    },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+		name: 'Image Amount',
+                 data: (function() {                                                 
+                    // generate an array of random data                             
+                    var data = [],                                                  
+                        time = (new Date()).getTime(),                              
+                        i;                                                          
+                    for (i = -59; i <= 0; i++) {                                    
+                        data.push({                                                 
+                            x: time + i * 10,                                     
+                            y: getimage()                                        
+                        });                                                         
+                    }                                                               
+                    return data;                                                    
+                })()        
+		}]
+        });
+    });
+    
+});
+
+$(function () {
+    $(document).ready(function() {
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        });
+        var chart;
+        $('#storycontainer').highcharts({
+            chart: {
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                    load: function() {
+    
+                        // set up the updating of the chart each second
+                        var series = this.series[0];
+                        setInterval(function() {
+                            var x = (new Date()).getTime(), // current time
+                                y = getstory();
+
+                            series.addPoint([x, y], true, true);
+                        },60* 1000);
+                    }
+                }
+            },
+            title: {
+                text: 'Speed'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Value'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                formatter: function() {
+                        return '<b>'+ this.series.name +'</b><br/>'+
+                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) +'<br/>'+
+                        Highcharts.numberFormat(this.y, 2);
+                }
+            },
+	    credits: {
+		enabled:false
+	    },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+		name: 'Story Amount',
+                 data: (function() {                                                 
+                    // generate an array of random data                             
+			var data = [],                                                  
+                        time = (new Date()).getTime(),                              
+                        i;                                                          
+                                                               
+                    for (i = -59; i <= 0; i++) {                                    
+                        data.push({                                                 
+                            x: time + i * 10,                                     
+                            y: getstory()                                        
+                        });                                                         
+                    }                                                               
+                    return data;                                                    
+                })()        
+		}]
+        });
+    });
+    
+});
+</script>
+
+	
+  </head>
+  <body>
+
+  <div class="container">
+	<div class="row">
+		<div class="span12">
+			<div class="page-header">
+				<h1>
+					RssEngine&nbsp;&nbsp;<small>monitor</small>
+				</h1>
+			</div>
+		</div>
+	</div>
+</div>
+ </br>
+</br>
+</br> 
+  <div class="container">
+	<div class="row">
+		<div class="span6">
+			<h2 class="text-left">
+				<em>Story</em>
+			</h2>
+			<div class="row">
+				<div class="span12">
+					<div id="storycontainer" style="width:650px;height:300px;margin:0auto"></div>
+					</br>
+					</br>
+					<table class="table" contenteditable="true">
+
+						<thead>
+							<tr>
+								<th>
+									<strong>Last</strong>
+								</th>
+								<th>
+									1 hour
+								</th>
+								<th>
+									6 hours
+								</th>
+								<th>
+									1 day
+								</th>
+								<th>
+									1 week
+								</th>
+								<th>
+									1 month
+								</th>
+								<th>
+									6 months
+								</th>
+								<th>
+									1 year
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="info">
+								<td>
+									<strong>Speed</strong>
+								</td>
+					  			{% for num in speed_story %}
+                                                                <td>
+                                                                       {{ num}}
+                                                                </td>
+                                                                {% endfor %}	
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		</br>
+		</br>
+		</br>
+		<div class="span6">
+			<h2>
+				<em>Image</em>
+			</h2>
+			<div class="row">
+				<div class="span12">
+					<div id="imagecontainer" style="width:650px;height:300px;margin:0auto"></div>
+					</br>
+					</br>
+					<table class="table" contenteditable="true">
+						<thead>
+							<tr>
+								<th>
+                                                                     <strong>Last</strong>
+                                                                </th>
+								<th>
+									1 hour
+								</th>
+								<th>
+									6 hours
+								</th>
+								<th>
+									1 day
+								</th>
+								<th>
+									1 week
+								</th>
+								<th>
+									1 month
+								</th>
+								<th>
+									6 months
+								</th>
+								<th>
+									1 year
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="info">
+								<td>
+									<strong>Speed</strong>
+								</td>
+								{% for num in speed_image %}
+                                                                <td>
+                                                                       {{ num}}
+                                                                </td>
+                                                                {% endfor %}
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</br>
+</br>
+</br>  
+</br>
+
+{% endblock %}  
+
+
